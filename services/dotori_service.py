@@ -1,27 +1,32 @@
+from datetime import datetime
+
+import sqlalchemy
+
 from models.dotori import UserDotori
 from flask import current_app
 from db import db
 class DotoriService:
     @staticmethod
     def get_user_dotori(user_id: int):
-        user_dotori = UserDotori.query.filter_by(id=user_id).first()
+        user_dotori = UserDotori.query.filter_by(user_id=user_id).first()
         if user_dotori:
-            return user_dotori.dotori_count
+            return user_dotori
         return None
 
     @staticmethod
     def initialize_user_dotori(user_id: int):
-        user_dotori = UserDotori.query.filter_by(id=user_id).first()
+        print(user_id)
+        user_dotori = UserDotori.query.filter_by(user_id=user_id).first()
         if not user_dotori:
-            user_dotori = UserDotori(id=user_id, dotori_count=1000000)
+            user_dotori = UserDotori(id=user_id, user_id=user_id, dotori_count=1000000)
             print(f"초기화 완료, {user_id}님의 도토리: {user_dotori.dotori_count}")
-            db.session.add(user_dotori)
+            db.session.execute(sqlalchemy.text("INSERT INTO user_dotori (user_id, dotori_count, created_at, updated_at) VALUES (:user_id, :dotori_count, :created_at, :updated_at)"), {"user_id":user_id, "dotori_count":1000000, "created_at":datetime.now(), "updated_at":datetime.now()})
             db.session.commit()
         return user_dotori.dotori_count
 
     @staticmethod
     def buy_product(user_id: int, product_price: int):
-        user_dotori = UserDotori.query.filter_by(id=user_id).first()
+        user_dotori = UserDotori.query.filter_by(user_id=user_id).first()
         if not user_dotori:
             return False
         
@@ -34,14 +39,14 @@ class DotoriService:
 
     @staticmethod
     def add_dotori(user_id: int, amount: int):
-        user_dotori = UserDotori.query.filter_by(id=user_id).first()
+        user_dotori = UserDotori.query.filter_by(user_id=user_id).first()
         if not user_dotori:
-            user_dotori = UserDotori(id=user_id)
+            user_dotori = UserDotori(user_id=user_id)
             db.session.add(user_dotori)
         print(f"도토리 추가, {user_id}님의 도토리: {user_dotori.dotori_count} -> {user_dotori.dotori_count + amount}")
         user_dotori.increment(amount)
         db.session.commit()
-        return user_dotori.dotori_count
+        return user_dotori
 
     @staticmethod
     def get_all_users_dotori() -> list:

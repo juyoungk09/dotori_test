@@ -20,7 +20,7 @@ class BuyProduct(Resource):
     @product_ns.response(400, 'Failed')
     def post(self, productId):
         data = product_ns.payload
-        user_id = data.get('userId')
+        user_id = data.get('user_id')
         if not user_id:
             product_ns.abort(400, 'userId is required')
         
@@ -30,7 +30,7 @@ class BuyProduct(Resource):
             user_dotori = DotoriService.get_user_dotori(user_id)
             return {
                 'isSuccess': True,
-                'userId': user_id,
+                'user_id': user_id,
                 'dotory': user_dotori if user_dotori else 0
             }
         else:
