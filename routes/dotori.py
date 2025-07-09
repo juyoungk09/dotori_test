@@ -19,7 +19,7 @@ class UserDotori(Resource):
 
 @dotori_ns.route('')
 class InitializeDotori(Resource):
-    @dotori_ns.expect(dotori_ns.model('Initialize', {'userId': fields.String(required=True)}))
+    @dotori_ns.expect(dotori_ns.model('Initialize', {'userId': fields.Integer(required=True)}))
     def post(self):
         data = dotori_ns.payload
         user_id = data.get('userId')
